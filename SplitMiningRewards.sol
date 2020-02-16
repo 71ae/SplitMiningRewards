@@ -29,8 +29,7 @@ contract SplitMiningRewards
     // CONSTRUCTOR
 
     /// Input adresses for costcenter and beneficiary.
-    //constructor(address payable _costcenter, address payable _beneficiary) public
-    constructor(address payable _beneficiary, address payable __costcenter) public
+    constructor(address payable _beneficiary, address payable _costcenter) public
     {
         owner = msg.sender;
         costcenter = _costcenter;
@@ -72,7 +71,6 @@ contract SplitMiningRewards
 
     // SAFE-GUARD
 
-
 // CAUSES COMPILER ERROR, PLEASE FIX
     // Make fallback payable to receive funds even when people don't know what they're doing.
     // We're not polite to send them back.
@@ -85,34 +83,35 @@ contract SplitMiningRewards
         uint _balance = address(this).balance;
         require (_balance > 21000 wei, "Not enough funds.");
         // TO-DO: emit an event
-        //payable(owner).transfer(_balance);
+        owner.transfer(_balance);
 
     }
 
     // MAINTENANCE
-// CAUSES COMPILER ERROR, PLEASE FIX
+
     // Maintenance: add delegate 'newDelegate'
-    //function addDelegate(address _newDelegate) public onlyDelegates
-    //{
-    //    delegates[_newDelegate] = true;
-    //    emit DelegationChanged(msg.sender, _newDelegate, "added as new delegate.");
-    //}
-// CAUSES COMPILER ERROR, PLEASE FIX
+    function addDelegate(address _newDelegate) public onlyDelegates()
+    {
+        delegates[_newDelegate] = true;
+        emit DelegationChanged(msg.sender, _newDelegate, "added as new delegate.");
+    }
+
     // Maintenance: delete delegate 'removeDelegate'
-    //function delDelegate(address _removeDelegate) public onlyDelegates
-   // {
+    function delDelegate(address _removeDelegate) public onlyDelegates()
+    {
         // TO-DO: add additional safe-guard here not to delete the last remaining delegate!
         // Within this code, delegates[] is a hash table, which does not allow counting its members.
         // We'll have to think about different options. Otherwise we may lose access to the main functionality.
         // For now: The owner of the contract is always the first delegate, and we'll ensure here that the owner cannot be removed.
-      //  require(_removeDelegate != owner, "Removal of the owner as delegate is not provided.");
-       // if (delegates[_removeDelegate])
-       // {
-        //    delegates[_removeDelegate] = false;
-        //    emit DelegationChanged(msg.sender, _removeDelegate, "removed as delegate.");
-        //}
-    //}
+        require(_removeDelegate != owner, "Removal of the owner as delegate is not provided.");
+        if (delegates[_removeDelegate])
+        {
+            delegates[_removeDelegate] = false;
+            emit DelegationChanged(msg.sender, _removeDelegate, "removed as delegate.");
+        }
+    }
 
     // Maintenance: Change payee addresses
     // TO-DO: Write some more functions.
+
 }
