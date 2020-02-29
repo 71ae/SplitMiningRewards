@@ -1,4 +1,4 @@
-pragma solidity >=0.5.0 <0.7.0;
+pragma solidity >=0.6.0 <0.7.0;
 
 /// @author 71ae and The Coding Army.
 /// @title Split and Distribute Mining Rewards between a costcenter and a beneficiary.
@@ -40,11 +40,10 @@ contract SplitMiningRewards
 
     // MAIN CONTRACT FUNCTIONS
 
-    // CAUSES COMPILER ERROR, PLEASE FIX
     // Receiving pure Ether.
-    //receive() external payable {
-    //    emit PaymentReceived(msg.sender, msg.value);
-    //}
+    receive() external payable {
+        emit PaymentReceived(msg.sender, msg.value);
+    }
 
     uint transaction_fee = 1000 wei;
     uint minimum_donation = 1000 wei;  // a threshhold value of the least amount of rewards to donate (because the transaction costs may not be worth it if the donation is very small)
@@ -74,7 +73,8 @@ contract SplitMiningRewards
 // CAUSES COMPILER ERROR, PLEASE FIX
     // Make fallback payable to receive funds even when people don't know what they're doing.
     // We're not polite to send them back.
-    //fallback () external payable { }
+    //fallback() external payable { } // for Solidity >= 0.6.0
+    //function() external payable { } // for Solidity < 0.6.0
 
     // Safe-guard: withdraw all remaining balance on the contract address to the owner.
     function withdrawAll() public
