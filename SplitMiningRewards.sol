@@ -11,7 +11,7 @@ contract SplitMiningRewards
     mapping(address => bool) delegates;
 
     address payable costcenter;
-    address payable beneficiary = 0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C;
+    address payable beneficiary;
 
     // EVENTS
 
@@ -35,7 +35,7 @@ contract SplitMiningRewards
         costcenter = _costcenter;
         beneficiary = _beneficiary;
         delegates[owner] = true;
-        emit writeaddress(address(this));
+        //emit writeaddress(address(this)); // CAUSES COMPILE ERROR
     }
 
     // MAIN CONTRACT FUNCTIONS
@@ -49,22 +49,22 @@ contract SplitMiningRewards
     uint transaction_fee = 1000 wei;
     uint minimum_donation = 1000 wei;  // a threshhold value of the least amount of rewards to donate (because the transaction costs may not be worth it if the donation is very small)
 
-    function SplitAndPay(uint electricity_cost) public
+    function SplitAndPay(uint electricity_cost) external payable
     {
         uint _balance = address(this).balance; // getting the amount of coin in this account
-        uint coin_to_leave_behind = 0.1*electricity_cost;   // a quantity of coin to be left over after the electricity costs have been paid and the rest of the rewards sent to the beneficiary, just in case e.g. electricity costs or coin conversion turn out more expensive than expected
+        uint coin_to_leave_behind = electricity_cost / 10;   // a quantity of coin to be left over after the electricity costs have been paid and the rest of the rewards sent to the beneficiary, just in case e.g. electricity costs or coin conversion turn out more expensive than expected
 
         // sending rewards to the beneficiary if enough coin has been mined
         if(_balance > electricity_cost + 2*transaction_fee + coin_to_leave_behind + minimum_donation)    // if there is enough ether on this wallet to cover the electricity costs and transaction fees, and if there would be enough ether left to make a donation to the reward address worthwhile
-            require(beneficiary.send((_balance - electricity_cost - transaction_fee))); // sending the donation to the beneficiary address
+            beneficiary.transfer((_balance - electricity_cost - transaction_fee)); // sending the donation to the beneficiary address
 
         _balance = address(this).balance; // getting the amount of coin left in this account
 
         // Sending money to the costcenter to cover the electicity costs:
         if(_balance > electricity_cost + transaction_fee)   // if there is enough money in the account to send the costcenter the electricity costs
-            require(costcenter.send(electricity_cost)); // sending the costcenter the money to cover the electricity costs
+            costcenter.transfer(electricity_cost); // sending the costcenter the money to cover the electricity costs
         else // there is not enough money in this wallet to cover all the electricity costs
-            require(costcenter.send(_balance - transaction_fee));   // sending the costcenter all the money in this account
+            costcenter.transfer(_balance - transaction_fee);   // sending the costcenter all the money in this account
     }
 
     // POTENTIALLY, SUPPORTING FUNCTIONS
