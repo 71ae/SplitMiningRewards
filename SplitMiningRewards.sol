@@ -46,11 +46,11 @@ contract SplitMiningRewards
     //    emit PaymentReceived(msg.sender, msg.value);
     //}
 
-    uint transaction_fee = 1000 wei;
-    uint minimum_donation = 1000 wei;  // a threshhold value of the least amount of rewards to donate (because the transaction costs may not be worth it if the donation is very small)
+    uint minimum_donation = 1000000000000000000 wei;  //= 1ETH. a threshhold value of the least amount of rewards to donate (because the transaction costs may not be worth it if the donation is very small)
 
     function SplitAndPay(uint electricity_cost) external payable
     {
+        uint transaction_fee = tx.gasprice * 21000; // calculating the transaction fee by multiplying the gas price with the default gas limit
         uint _balance = address(this).balance; // getting the amount of coin in this account
         uint coin_to_leave_behind = electricity_cost / 10;   // a quantity of coin to be left over after the electricity costs have been paid and the rest of the rewards sent to the beneficiary, just in case e.g. electricity costs or coin conversion turn out more expensive than expected
 
