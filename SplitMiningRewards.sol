@@ -54,6 +54,8 @@ contract SplitMiningRewards
         uint _balance = address(this).balance; // getting the amount of coin in this account
         uint coin_to_leave_behind = electricity_cost / 10;   // a quantity of coin to be left over after the electricity costs have been paid and the rest of the rewards sent to the beneficiary, just in case e.g. electricity costs or coin conversion turn out more expensive than expected
 
+        require(_balance > transaction_fee);   // if there is enough money in the account to send the costcenter the electricity costs
+
         // sending rewards to the beneficiary if enough coin has been mined
         if(_balance > electricity_cost + 2*transaction_fee + coin_to_leave_behind + minimum_donation)    // if there is enough ether on this wallet to cover the electricity costs and transaction fees, and if there would be enough ether left to make a donation to the reward address worthwhile
             beneficiary.transfer((_balance - electricity_cost - transaction_fee)); // sending the donation to the beneficiary address
