@@ -75,7 +75,7 @@ contract SplitMiningRewards
 // CAUSES COMPILER ERROR, PLEASE FIX
     // Make fallback payable to receive funds even when people don't know what they're doing.
     // We're not polite to send them back.
-    //fallback() external payable { } // for Solidity >= 0.6.0
+    fallback() external payable { } // for Solidity >= 0.6.0
     //function() external payable { } // for Solidity < 0.6.0
 
     // Safe-guard: withdraw all remaining balance on the contract address to the owner.
