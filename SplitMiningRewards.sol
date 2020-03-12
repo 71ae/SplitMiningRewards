@@ -120,9 +120,9 @@ contract SplitMiningRewards
     }
 
     // Maintenance: Change beneficiary payee address
-    function changePayeeBeneficiary(address _newBeneficiary) public onlyDelegates()
+    function changePayeeBeneficiary(address payable _newBeneficiary) public onlyDelegates()
     {
-
+        beneficiary = _newBeneficiary;
     }
 
     // TO-DO: Write some more functions.
