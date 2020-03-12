@@ -113,7 +113,18 @@ contract SplitMiningRewards
         }
     }
 
-    // Maintenance: Change payee addresses
+    // Maintenance: Change costcenter payee address
+    function changePayeeCostcenter(address _newCostcenter) public onlyDelegates()
+    {
+
+    }
+
+    // Maintenance: Change beneficiary payee address
+    function changePayeeBeneficiary(address _newBeneficiary) public onlyDelegates()
+    {
+
+    }
+
     // TO-DO: Write some more functions.
 
 }
