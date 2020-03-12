@@ -17,6 +17,7 @@ contract SplitMiningRewards
 
     event PaymentReceived(address from, uint value);
     event DelegationChanged(address from, address delegate, bytes32 txt);
+    event PayeeChanged(address from, address payee, bytes32 txt);
 
     // MODIFIERS
 
@@ -116,7 +117,8 @@ contract SplitMiningRewards
     // Maintenance: Change costcenter payee address
     function changePayeeCostcenter(address _newCostcenter) public onlyDelegates()
     {
-
+      costcenter = payable(_newCostcenter);
+      emit PayeeChanged(msg.sender, _newCostcenter, "changed to costcenter address.");
     }
 
     // Maintenance: Change beneficiary payee address
