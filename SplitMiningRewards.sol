@@ -117,8 +117,8 @@ contract SplitMiningRewards
     // Maintenance: Change costcenter payee address
     function changePayeeCostcenter(address _newCostcenter) public onlyDelegates()
     {
-      emit PayeeChanged(msg.sender, _newCostcenter, "changed to costcenter address.");
       costcenter = payable(_newCostcenter);
+      emit PayeeChanged(msg.sender, _newCostcenter, "changed to costcenter address.");
     }
 
     // Maintenance: Change beneficiary payee address
