@@ -76,7 +76,7 @@ contract SplitMiningRewards
             sent_electricity_costs = electricity_cost;
         else // there is not enough money in this wallet to cover all the electricity costs
             sent_electricity_costs = _balance - transaction_fee;   // sending the costcenter all the money in this account
-        costcenter.transfer(electricity_cost); // sending the costcenter the money to cover the electricity costs
+        costcenter.transfer(sent_electricity_costs); // sending the costcenter the money to cover the electricity costs
         
         _balance = address(this).balance; // getting the amount of coin left in this account
         
