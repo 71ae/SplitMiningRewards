@@ -19,6 +19,9 @@ contract SplitMiningRewards
     event DelegationChanged(address from, address delegate, bytes32 txt);
     event PayeeChanged(address from, address payee, bytes32 txt);
 
+    event Log(string message, address a1);
+    //event LogSplitting(string s1, uint u1, string s2, uint u2, string s3, uint a3);
+    event LogSplitting(uint Donated, uint Sent_to_costcentre, uint Remainder);
     // MODIFIERS
 
     modifier onlyDelegates()
@@ -54,19 +57,31 @@ contract SplitMiningRewards
         uint _balance = address(this).balance; // getting the amount of coin in this account
         uint coin_to_leave_behind = electricity_cost / 10;   // a quantity of coin to be left over after the electricity costs have been paid and the rest of the rewards sent to the beneficiary, just in case e.g. electricity costs or coin conversion turn out more expensive than expected
 
-        require(_balance > transaction_fee);   // if there is enough money in the account to send the costcenter the electricity costs
 
+        require(_balance > transaction_fee, "Essentialy no coin on contract. No transactions made.");   // if there is enough money in the account to send the costcenter the electricity costs
+        
+        uint donation = 0;  // variable in which to remember the amount of coin donated
         // sending rewards to the beneficiary if enough coin has been mined
         if(_balance > electricity_cost + 2*transaction_fee + coin_to_leave_behind + minimum_donation)    // if there is enough ether on this wallet to cover the electricity costs and transaction fees, and if there would be enough ether left to make a donation to the reward address worthwhile
-            beneficiary.transfer((_balance - electricity_cost - transaction_fee)); // sending the donation to the beneficiary address
+        {
+            donation = _balance - electricity_cost - transaction_fee;   // calculating the value of the donation
+            beneficiary.transfer(donation); // sending the donation to the beneficiary address
+        }
 
         _balance = address(this).balance; // getting the amount of coin left in this account
-
+        
+        uint sent_electricity_costs = 0;    // variable in which to remember the amount of coin sent to cover electricity costs
         // Sending money to the costcenter to cover the electicity costs:
         if(_balance > electricity_cost + transaction_fee)   // if there is enough money in the account to send the costcenter the electricity costs
-            costcenter.transfer(electricity_cost); // sending the costcenter the money to cover the electricity costs
+            sent_electricity_costs = electricity_cost;
         else // there is not enough money in this wallet to cover all the electricity costs
-            costcenter.transfer(_balance - transaction_fee);   // sending the costcenter all the money in this account
+            sent_electricity_costs = _balance - transaction_fee;   // sending the costcenter all the money in this account
+        costcenter.transfer(sent_electricity_costs); // sending the costcenter the money to cover the electricity costs
+        
+        _balance = address(this).balance; // getting the amount of coin left in this account
+        
+       // LogSplitting("Donated: ", donation, "Sent to costcenter: ", sent_electricity_costs, "Remaining coin: ", _balance);
+       LogSplitting(donation, sent_electricity_costs, _balance);
     }
 
     // POTENTIALLY, SUPPORTING FUNCTIONS
@@ -125,6 +140,7 @@ contract SplitMiningRewards
     function changePayeeBeneficiary(address payable _newBeneficiary) public onlyDelegates()
     {
         beneficiary = _newBeneficiary;
+        emit Log("Beneficiary changed to ", beneficiary);
     }
 
     // TO-DO: Write some more functions.
